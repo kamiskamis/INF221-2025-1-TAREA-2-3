@@ -1,5 +1,0 @@
-[0] Config.pm:307> INFO - This is Biber 2.17
-[3] Config.pm:310> INFO - Logfile is 'tarea_main.blg'
-[136] biber:340> INFO - === Wed Jun 18, 2025, 23:11:57
-[339] Utils.pm:398> ERROR - Cannot find 'tarea_main.bcf'!
-[339] Biber.pm:135> INFO - ERRORS: 1

@@ -54,7 +54,7 @@ def main():
         return
 
     # Crear carpeta para guardar los gráficos si no existe
-    plot_folder = os.path.join("code", "dynamic_programming", "data", "plots")
+    plot_folder = os.path.join("report", "images")
     os.makedirs(plot_folder, exist_ok=True)
 
     # ----------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ def main():
     plt.title("Relación entre dimensión y tiempo de ejecución (DP)")
     plt.legend()
     plt.grid(True)
-    graph_path = os.path.join(plot_folder, "dim_vs_time_graph.png")
+    graph_path = os.path.join(plot_folder, "dtdp.png")
     plt.savefig(graph_path, dpi=300, bbox_inches="tight")
     print("Gráfico guardado en:", graph_path)
     plt.close()
@@ -103,7 +103,7 @@ def main():
     table.set_fontsize(10)
     table.scale(1.2, 1.2)
 
-    table_path = os.path.join(plot_folder, "dim_vs_time_table.png")
+    table_path = os.path.join(plot_folder, "dtdpt.png")
     plt.savefig(table_path, dpi=300, bbox_inches="tight")
     print("Tabla guardada en:", table_path)
     plt.close()
