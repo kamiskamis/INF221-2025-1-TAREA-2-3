@@ -4,8 +4,17 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <atomic>
 
-std::pair<std::vector<std::string>, std::vector<std::string>>
-obtenerDiferencias(const std::string& s, const std::string& t);
+using std::string;
+using std::vector;
+using std::pair;
+using std::atomic;
 
-#endif
+// Función que implementa la fuerza bruta para calcular la LCS, checando la bandera cancel.
+string LCS_fuerza_bruta(const string &s, const string &t, atomic<bool>& cancel);
+
+// Función que devuelve las diferencias basado en la LCS, chequeando la bandera cancel.
+pair<vector<string>, vector<string>> fb_diff(const string &s, const string &t, atomic<bool>& cancel);
+
+#endif // SEQUENCE_DIFFERENCE_H

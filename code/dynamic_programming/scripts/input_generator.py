@@ -3,12 +3,15 @@ import random
 import string
 
 NUM_ARCHIVOS = 3
-CASOS_POR_ARCHIVO = 10
-MAX_LEN = 15
-CHARS = string.ascii_uppercase    
+CASOS_POR_ARCHIVO = 5
+MAX_LEN = 20
+CHARS = string.ascii_uppercase + " "  # Ahora incluye espacios
 
-output_dir = "code/brute_force/data/brute_force_input"
-os.makedirs(output_dir, exist_ok=True)
+# Directorios de entrada para DP y BF
+output_dir_dp = "code/dynamic_programming/data/dynamic_programming_input"
+output_dir_bf = "code/brute_force/data/brute_force_input"
+os.makedirs(output_dir_dp, exist_ok=True)
+os.makedirs(output_dir_bf, exist_ok=True)
 
 def generar_cadena(largo):
     return ''.join(random.choices(CHARS, k=largo))
@@ -20,7 +23,7 @@ def generar_caso(tipo):
     elif tipo == "igual":
         n = random.randint(1, MAX_LEN)
         s = generar_cadena(n)
-        t = s  # iguales
+        t = s  # Ambas son iguales.
     elif tipo == "diferente":
         n = random.randint(1, MAX_LEN)
         m = random.randint(1, MAX_LEN)
@@ -35,12 +38,20 @@ def generar_caso(tipo):
 tipos = ["vacio", "igual", "diferente"]
 
 for archivo in range(NUM_ARCHIVOS):
-    nombre = f"{output_dir}/entrada_{archivo + 1}.txt"
-    with open(nombre, "w") as f:
-        f.write(f"{CASOS_POR_ARCHIVO}\n")
-        for _ in range(CASOS_POR_ARCHIVO):
-            tipo = random.choices(tipos, weights=[1, 2, 7])[0]  # más casos diferentes
-            caso = generar_caso(tipo)
-            f.write(caso)
+    contenido = f"{CASOS_POR_ARCHIVO}\n"
+    for _ in range(CASOS_POR_ARCHIVO):
+        tipo = random.choices(tipos, weights=[1, 2, 7])[0]  # Mayor probabilidad de "diferente"
+        caso = generar_caso(tipo)
+        contenido += caso
 
-print(f"casos de prueba generados :3")
+    # Guardar el mismo contenido en el directorio de DP
+    nombre_dp = f"{output_dir_dp}/entrada_{archivo + 1}.txt"
+    with open(nombre_dp, "w") as f:
+        f.write(contenido)
+
+    # Guardar el mismo contenido en el directorio de BF
+    nombre_bf = f"{output_dir_bf}/entrada_{archivo + 1}.txt"
+    with open(nombre_bf, "w") as f:
+        f.write(contenido)
+
+print("Casos de prueba generados para DP y BF con espacios incluidos :3")

@@ -1,0 +1,11 @@
+5
+0
+ERROR: tiempo excedido (más de 5 minutos)
+1
+NWHM KX
+1
+LEA D
+3
+P JEB XBXVFLR
+ J
+RN BM

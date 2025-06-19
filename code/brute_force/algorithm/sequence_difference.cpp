@@ -1,36 +1,60 @@
 #include "sequence_difference.h"
 
-std::pair<std::vector<std::string>, std::vector<std::string>>
-obtenerDiferencias(const std::string& s, const std::string& t) {
-    int n = (int)s.size(), m = (int)t.size();
-    int inicio = 0;
-    while (inicio < n && inicio < m && s[inicio] == t[inicio]) inicio++;
-    int fin = 0;
-    while (n - 1 - fin >= inicio && m - 1 - fin >= inicio && s[n - 1 - fin] == t[m - 1 - fin]) fin++;
+string LCS_fuerza_bruta(const string& s, const string& t, atomic<bool>& cancel) {
+    int n = s.size(), m = t.size();
+    int max_len = 0;
+    string mejor = "";
 
-    std::vector<std::string> partes_s, partes_t;
-    if (inicio + fin <= n || inicio + fin <= m) {
-        std::string sub_s = s.substr(inicio, n - inicio - fin);
-        std::string sub_t = t.substr(inicio, m - inicio - fin);
-
-        int i = 0, j = 0;
-        while (i < (int)sub_s.size() || j < (int)sub_t.size()) {
-            int ini_i = i, ini_j = j;
-            while (i < (int)sub_s.size() && j < (int)sub_t.size() && sub_s[i] == sub_t[j]) {
-                i++; j++;
+    for (int mask_s = 0; mask_s < (1 << n); ++mask_s) {
+        if (cancel.load()) return "";  // Cancelación cooperativa
+        string sub_s = "";
+        for (int i = 0; i < n; ++i) {
+            if (mask_s & (1 << i))
+                sub_s += s[i];
+        }
+        for (int mask_t = 0; mask_t < (1 << m); ++mask_t) {
+            if (cancel.load()) return "";
+            string sub_t = "";
+            for (int j = 0; j < m; ++j) {
+                if (mask_t & (1 << j))
+                    sub_t += t[j];
             }
-            if (ini_i < (int)sub_s.size() || ini_j < (int)sub_t.size()) {
-                int sig_i = ini_i, sig_j = ini_j;
-                while (sig_i < (int)sub_s.size() && (sig_j >= (int)sub_t.size() || sub_s[sig_i] != sub_t[sig_j]))
-                    sig_i++;
-                while (sig_j < (int)sub_t.size() && (sig_i >= (int)sub_s.size() || sub_s[sig_i] != sub_t[sig_j]))
-                    sig_j++;
-                partes_s.push_back(sub_s.substr(ini_i, sig_i - ini_i));
-                partes_t.push_back(sub_t.substr(ini_j, sig_j - ini_j));
-                i = sig_i;
-                j = sig_j;
+            if (sub_s == sub_t && static_cast<int>(sub_s.size()) > max_len) {
+                max_len = sub_s.size();
+                mejor = sub_s;
             }
         }
     }
-    return {partes_s, partes_t};
+    return mejor;
+}
+
+pair<vector<string>, vector<string>> fb_diff(const string &s, const string &t, atomic<bool>& cancel) {
+    vector<string> dif_s, dif_t;
+    string lcs = LCS_fuerza_bruta(s, t, cancel);
+    size_t i = 0, j = 0, k = 0;
+    while (k < lcs.size()) {
+        if (cancel.load()) return {dif_s, dif_t};  // Abortamos en cuanto se detecta cancelación
+        string seg_s = "", seg_t = "";
+        while (i < s.size() && s[i] != lcs[k]) {
+            if (cancel.load()) return {dif_s, dif_t};
+            seg_s += s[i++];
+        }
+        while (j < t.size() && t[j] != lcs[k]) {
+            if (cancel.load()) return {dif_s, dif_t};
+            seg_t += t[j++];
+        }
+        if (!seg_s.empty() || !seg_t.empty()) {
+            dif_s.push_back(seg_s);
+            dif_t.push_back(seg_t);
+        }
+        i++;
+        j++;
+        k++;
+    }
+    if (i < s.size() || j < t.size()) {
+        if (cancel.load()) return {dif_s, dif_t};
+        dif_s.push_back(s.substr(i));
+        dif_t.push_back(t.substr(j));
+    }
+    return {dif_s, dif_t};
 }
